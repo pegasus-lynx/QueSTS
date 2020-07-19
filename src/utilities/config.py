@@ -1,0 +1,2 @@
+
+BASE_DIR = "../../resources/"
