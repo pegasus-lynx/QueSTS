@@ -6,3 +6,6 @@ build:
 
 setup:
 	python setup.py
+
+process:
+	python process.py

@@ -53,6 +53,7 @@ def load_vocabs(file):
     
     with open(file,"r") as f:
         for i,line in enumerate(f):
+            line = line.strip()
             vocabs[line] = i
             inv_vocabs[i] = line
 
@@ -74,3 +75,16 @@ def save_filenames(file, filenames):
             f.write(name)
             f.write("\n")
 
+def read_datafile(file):
+    raw = []
+    processed = []
+    with open(file, "r") as f:
+        for line in f:
+            line = line.strip()
+            if len(line) != 0:
+                if len(raw) != len(processed):
+                    processed.append(line.split(" "))
+                else:
+                    raw.append(line)
+
+    return (raw, processed)
