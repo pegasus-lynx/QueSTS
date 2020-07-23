@@ -5,4 +5,5 @@ PROC_DIR = BASE_DIR + "processed/"
 
 VOCAB_DIR = PROC_DIR + "vocabs/"
 CGRAPH_DIR = PROC_DIR + "cgraphs/"
+IGRAPH_DIR = PROC_DIR + "igraphs/"
 

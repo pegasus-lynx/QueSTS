@@ -1,29 +1,11 @@
 import numpy as np
+from os.path import join
+
 from utilities.config import PROC_DIR, CGRAPH_DIR
 from utilities.preprocess import read_datafile
 from utilities.utils import get_idf
 
-from os.path import join
-
-class ContextualGraphNode(object):
-    
-    def __init__(self, vector = None, line = None, tokens = None):
-        self.line = line
-        self.tokens = tokens
-        self.vec = vector
-
-    def vector(self):
-        return self.vec
-
-    def similarity(self, node):
-
-        dot = np.dot(self.vector(), node.vector())
-
-        norm_self = np.linalg.norm(self.vector())
-        norm_node = np.linalg.norm(node.vector())
-
-        return dot / (norm_self * norm_node)
-
+from graph_node import GraphNode
 
 class ContextualGraph(object):
     
@@ -60,7 +42,7 @@ class ContextualGraph(object):
         
         dim = len(vocabs["words"])
         
-        node = ContextualGraphNode()
+        node = GraphNode()
         node.vec = np.zeros((dim,1))
         
         node.line = line
@@ -81,6 +63,10 @@ class ContextualGraph(object):
                 sim = self.nodes[p].similarity(self.nodes[q])
                 if sim > 0.001:
                     self.adj_mat[p][q] = sim
+                    self.adj_mat[q][p] = sim
+
+    def parents(self):
+        return np.argmax(self.adj_mat, axis=1).tolist()
 
     def save(self):
         filepath = join(CGRAPH_DIR, self.filename)
@@ -98,7 +84,7 @@ class ContextualGraph(object):
         graph = ContextualGraph(file)
 
         textfile_path = join(PROC_DIR, file)
-        datafile_path = join(CGRAPH_DIR, file)
+        datafile_path = join(CGRAPH_DIR, file.replace("txt", "npz"))
         
         nodes = None
         with open(datafile_path, "r") as data:
@@ -110,7 +96,7 @@ class ContextualGraph(object):
         raw, processed = read_datafile(textfile_path)
 
         for p in range(graph.length):
-            node = ContextualGraphNode(nodes[p], raw[p], processed[p])
+            node = GraphNode(nodes[p], raw[p], processed[p])
             graph.nodes.append(node)
 
         return graph
