@@ -152,6 +152,9 @@ class IntegratedGraph(object):
                 f.write(graph.filename)
                 f.write("\n")
 
+    def save_json(self):
+        pass
+
     @staticmethod
     def load(file):
         filepath = join(IGRAPH_DIR, file)
@@ -167,3 +170,10 @@ class IntegratedGraph(object):
         vocabs["words"], vocabs["inv_words"] = load_vocabs(join(VOCAB_DIR, "words.txt"))    
 
         return IntegratedGraph(file, vocabs, cgraphs)
+
+    @staticmethod
+    def load_json(file):
+        pass
+
+    def __len__(self):
+        return len(self.nodes)

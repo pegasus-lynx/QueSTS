@@ -3,7 +3,7 @@ from os.path import join
 
 from utilities.config import PROC_DIR, CGRAPH_DIR
 from utilities.preprocess import read_datafile
-from utilities.utils import get_idf
+from utilities.utils import get_isf, get_tf
 
 from graph_node import GraphNode
 
@@ -19,18 +19,18 @@ class ContextualGraph(object):
 
         self.nodes = None
         self.adj_mat = None
-        self.doc_idf = None
+        self.isf = None
 
         if vocabs is not None:
             self.build(vocabs)
     
-    def build(self, vocabs):
+    def build(self, vocabs, isf):
         filepath = join(PROC_DIR, self.filename)
 
         self.raw, self.processed = read_datafile(filepath)
         self.length = len(self.raw)
 
-        self.doc_idf = get_idf()
+        self.isf = isf
 
         for line, tokens in zip(self.raw, self.processed):
             node = self.make_node(line, tokens, vocabs)
@@ -48,10 +48,9 @@ class ContextualGraph(object):
         node.line = line
         node.tokens = tokens
         
-        for token in tokens:
-            node.vec[vocabs["words"][token]][0] += 1
+        tf = get_tf(tokens, vocabs)
 
-        node.vec = np.dot(node.vec, self.idf)
+        node.vec = tf*self.isf
         return node
 
     def make_adj_mat(self):
@@ -79,6 +78,9 @@ class ContextualGraph(object):
 
         np.savez_compressed(filepath, nodes=nodes, adj_mat=self.adj_mat)
 
+    def save_json(self):
+        pass
+
     @staticmethod
     def load(file):
         graph = ContextualGraph(file)
@@ -100,3 +102,10 @@ class ContextualGraph(object):
             graph.nodes.append(node)
 
         return graph
+
+    @staticmethod
+    def load_json(file):
+        pass
+
+    def __len__(self):
+        return len(self.nodes)

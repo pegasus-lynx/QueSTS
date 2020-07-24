@@ -36,6 +36,20 @@ def process_doc(raw_sentences, lemmatizer = WordNetLemmatizer()):
     
     return processed
 
+def tokenize_query(query, lemmatizer = WordNetLemmatizer()):
+    
+    tokens = []
+    words = query.strip().split()
+    
+    for word in words:
+        tokens.append(re.split('[^a-zA-Z]', word.lower()))
+
+    lemmatized_tokens = [
+        lemmatizer.lemmatize(token) for token in tokens 
+        if not token in stopwords.words('english')]
+
+    return lemmatized_tokens
+
 def make_vocab(processed_tokens):
     words = set()
     for tokens in processed_tokens:

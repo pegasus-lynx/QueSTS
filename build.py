@@ -1,5 +1,6 @@
 from utilities.config import DATA_DIR, PROC_DIR, VOCAB_DIR
 from utilities.preprocess import get_files, read_datafile, load_vocabs
+from utilities.utils import get_isf
 from contextual_graph import ContextualGraph
 from integrated_graph import IntegratedGraph
 
@@ -12,11 +13,13 @@ if __name__ == "__main__":
     vocabs["words"], vocabs["inv_words"] = load_vocabs(join(VOCAB_DIR, "words.txt"))    
 
     files = vocabs["files"].keys()
+    isf = get_isf(files, vocabs)
+    
     cgraphs = []
 
     for file in files:        
         cg = ContextualGraph(file)
-        cg.build(vocabs)
+        cg.build(vocabs, isf)
         cgraphs.append(cg)
         cg.save()
 

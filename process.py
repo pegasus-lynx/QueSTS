@@ -13,6 +13,7 @@ if __name__ == "__main__":
     save_filenames(FILES, files)
 
     vocabs = set()
+    vocabs.add("<oov>")
 
     for file in files:
         filepath = join(DATA_DIR, file)
@@ -26,4 +27,3 @@ if __name__ == "__main__":
         vocabs.update(get_vocabs(processed))
 
     save_vocabs(WORDS, list(vocabs))
-
