@@ -4,11 +4,12 @@ from os.path import join
 from utilities.config import VOCAB_DIR, CGRAPH_DIR, IGRAPH_DIR
 from utilities.preprocess import load_vocabs
 from utilities.utils import get_isf, get_query_wts, differs
-from utilities.utils import query_similarity_weights
+from utilities.utils import query_similarity_weights, transpose
 
 from integrated_graph import IntegratedGraph
 from contextual_graph import ContextualGraph
 from contextual_tree import CTree
+from summary_graph import SGraph
 
 from graph_node import GraphNode, TreeNode
 from query import Query
@@ -27,6 +28,7 @@ class QueSTS(object):
 
         # Persistent objects for handling query processing
         self.ctrees = None
+        self.sgraphs = []
         self.node_wts = None
 
     def load_vocabs(self):
@@ -42,12 +44,22 @@ class QueSTS(object):
 
         node_wts = self.get_node_weights(query)
 
-        for i,token in enumerate(query.tokens):
+        for q,token in enumerate(query.tokens):
             ctree_row = []
             for j,node in enumerate(self.igraph.nodes):
-                ctree = CTree(node)
-                ctree.construct()
+                ctree = CTree(token,node)
+                ctree.construct(self.igraph, self.node_wts[q])
 
+                ctree_row.append(ctree)
+
+            self.ctrees.append(ctree_row)
+
+        self.ctrees = transpose(self.ctrees)
+
+        for node, ctree_list in zip(self.igraph,self.ctrees):
+            sgraph = SGraph(node)
+            self.sgraphs.append(self.merge_ctrees(ctree_list))
+        
     def get_node_weights(self, query, bias_factor=0.5):
         
         sim_ss = self.igraph.adj_mat
@@ -72,3 +84,8 @@ class QueSTS(object):
             iterate = differs(nwts, nwts_next)
 
         return nwts
+
+    def merge_ctrees(self):
+        sgraph = SGraph()
+
+        return sgraph

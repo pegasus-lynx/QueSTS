@@ -102,3 +102,16 @@ def differs(wts_prev, wts_curr, diff=0.00001):
     if np.sum(delta) < diff:
         return True
     return False 
+
+def transpose(mat):
+
+    row = len(mat)
+    col = len(mat[0])
+
+    tmat = [ [None]*row ]*col
+
+    for r in range(row):
+        for c in range(col):
+            tmat[c][r] = mat[r][c]
+
+    return tmat

@@ -144,6 +144,12 @@ class IntegratedGraph(object):
 
         return sorted_nodes
 
+    def get_node_index(self, gnode):
+        for i,node in enumerate(self.nodes):
+            if node == gnode:
+                return i
+        return -1
+
     def save(self):
         text_filepath = join(IGRAPH_DIR, self.filename)
 
@@ -177,3 +183,15 @@ class IntegratedGraph(object):
 
     def __len__(self):
         return len(self.nodes)
+
+    # def traverse(self, root_index=0, beam=3, depth=4):
+    #     vis = [False] * len(self.nodes)
+    #     queue = [(root_index, -1)]
+    #     vis[root_index] = True
+
+    #     while len(queue) != 0:
+    #         yield queue[0]
+    #         pid = queue[0][0]
+
+
+    #         pass
