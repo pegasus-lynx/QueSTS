@@ -47,8 +47,8 @@ class QueSTS(object):
         for q,token in enumerate(query.tokens):
             ctree_row = []
             for j,node in enumerate(self.igraph.nodes):
-                ctree = CTree(token,node)
-                ctree.construct(self.igraph, self.node_wts[q])
+                ctree = CTree(token,self.node_wts[q],node)
+                ctree.construct(self.igraph)
 
                 ctree_row.append(ctree)
 
@@ -59,7 +59,27 @@ class QueSTS(object):
         for node, ctree_list in zip(self.igraph,self.ctrees):
             sgraph = SGraph(node)
             self.sgraphs.append(self.merge_ctrees(ctree_list))
-        
+
+    def summary(self):
+        text = []
+
+        queue = [self.rnode]
+
+        while len(queue):
+            curr = queue[0]
+            text.append((curr.node.id, curr.node.line))
+            queue.pop(0)
+
+            queue.extend(curr.childs)
+
+        text.sort(key=lambda r:r[0])
+        text = [x[1] for x in text]
+
+        res = "\n".join(text)
+        print(res)
+
+        return res
+
     def get_node_weights(self, query, bias_factor=0.5):
         
         sim_ss = self.igraph.adj_mat
